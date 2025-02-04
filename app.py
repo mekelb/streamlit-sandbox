@@ -2,7 +2,8 @@ from pymongo import MongoClient
 import datetime
 
 # MongoDB Atlas connection (replace with your own connection string)
-MONGO_URI = "mongodb+srv://michaelumbuec:okayeg123@cluster0.m9n3vhv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+# Access the Mongo URI from Streamlit secrets
+MONGO_URI = st.secrets["mongo"]["MONGO_URI"]
 client = MongoClient(MONGO_URI)
 
 # Access the database
