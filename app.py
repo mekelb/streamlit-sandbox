@@ -35,7 +35,7 @@ st.write("Place your bet before 11:00 AM! Do you think Cuno masuk hari ini? Earn
 
 player_name = st.text_input("Masukin nama lu dulu nih:")
 
-bet = st.radio("Bet lu:", ["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 1 naruh tas"])
+bet = st.radio("Bet lu:", ["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 11 naruh tas", "cerita soal macet", "ngeeluh soal kerjann pagi2", "ngerjain reza"])
 wager = st.number_input("Mau bet berapa poin?", min_value=1, max_value=st.session_state['points'], step=1)
 
 if st.button("Gas Bet!"):
