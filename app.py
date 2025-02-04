@@ -16,9 +16,9 @@ if 'bets' not in st.session_state:
 if 'bandar_confirmed' not in st.session_state:
     st.session_state['bandar_confirmed'] = False
 
-# Bandar decides availability at 11:00 AM
+# Bandar decides availability at 15:50
 current_time = datetime.datetime.now().time()
-decision_time = datetime.time(11, 0)
+decision_time = datetime.time(15, 50)  # Changed to 3:50 PM
 
 # Tailwind styles for custom layout and animation
 st.markdown("""
@@ -57,7 +57,7 @@ st.markdown("""
 
 st.title("🎲 Cuno Masuk Hari Ini? Bet Now! 🎲")
 
-st.write("Place your bet before 11:00 AM! Do you think Cuno masuk hari ini? Earn points and climb the leaderboard!")
+st.write("Place your bet before 15:50! Do you think Cuno masuk hari ini? Earn points and climb the leaderboard!")
 
 player_name = st.text_input("Masukin nama lu dulu nih:")
 
@@ -81,7 +81,7 @@ if bandar_code == "bandar123":  # Change this to your preferred bandar code
         st.session_state['bandar_confirmed'] = True
         st.success("Hasil berhasil diset! Sekarang semua bisa lihat hasilnya!")
 
-# Show results after 11:00 AM
+# Show results after 15:50
 if current_time >= decision_time and st.session_state['bandar_confirmed']:
     st.subheader("🔔 Hasil Udah Keluar Bre! 🔔")
     if st.session_state['is_available'] is not None:
