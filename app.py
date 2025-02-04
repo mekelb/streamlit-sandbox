@@ -20,13 +20,39 @@ if 'admin_confirmed' not in st.session_state:
 current_time = datetime.datetime.now().time()
 decision_time = datetime.time(11, 0)
 
-# Tailwind styles
+# Tailwind styles for custom layout and animation
 st.markdown("""
     <style>
         body {background-color: #fef9c3; font-family: 'Comic Sans MS', cursive;}
         .stButton>button {border-radius: 12px; background-color: #f87171; color: white; font-size: 20px; padding: 10px;}
         .stDataFrame {border: 3px dashed #facc15;}
+        
+        /* Left and right animation */
+        .left-animation, .right-animation {
+            position: fixed;
+            top: 20%;
+            width: 200px;
+            z-index: 999;
+        }
+        
+        .left-animation {
+            left: 0;
+        }
+        
+        .right-animation {
+            right: 0;
+        }
     </style>
+""", unsafe_allow_html=True)
+
+# Add the images for the animations
+st.markdown("""
+    <div class="left-animation">
+        <img src="https://media.istockphoto.com/id/1221449346/id/foto/gadis-berpakaian-merah-menampilkan-chip-berpose-dengan-latar-belakang-gelap-roulette-bermain.jpg?s=2048x2048&w=is&k=20&c=K21JFnyFBiGV0cJCaHtm8F6YXe0w853lCrVP09xsJSw=" width="200" />
+    </div>
+    <div class="right-animation">
+        <img src="https://media.istockphoto.com/id/1190168811/id/foto/gadis-bermain-poker-di-kasino-memegang-segelas-sampanye-dua-ace-berpose-di-meja-dengan-keripik.jpg?s=2048x2048&w=is&k=20&c=iq0oYaBUiyQU4_wgBiPtxRMaTHeKdDDL13MlEElVv5g=" width="200" />
+    </div>
 """, unsafe_allow_html=True)
 
 st.title("🎲 Cuno Masuk Hari Ini? Bet Now! 🎲")
