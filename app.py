@@ -13,12 +13,12 @@ if 'is_available' not in st.session_state:
     st.session_state['is_available'] = None
 if 'bets' not in st.session_state:
     st.session_state['bets'] = []
+if 'admin_confirmed' not in st.session_state:
+    st.session_state['admin_confirmed'] = False
 
 # Admin decides availability at 11:00 AM
 current_time = datetime.datetime.now().time()
 decision_time = datetime.time(11, 0)
-if current_time >= decision_time and st.session_state['is_available'] is None:
-    st.session_state['is_available'] = random.choice(["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 1 naruh tas"])
 
 # Tailwind styles
 st.markdown("""
@@ -35,7 +35,7 @@ st.write("Place your bet before 11:00 AM! Do you think Cuno masuk hari ini? Earn
 
 player_name = st.text_input("Masukin nama lu dulu nih:")
 
-bet = st.radio("Bet lu:", ["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 11 naruh tas", "cerita soal macet", "ngeeluh soal kerjann pagi2", "ngerjain reza"])
+bet = st.radio("Bet lu:", ["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 1 naruh tas","cerita soal macet" , "ngeeluh soal kerjaan pagi2","ngerjain reza" ])
 wager = st.number_input("Mau bet berapa poin?", min_value=1, max_value=st.session_state['points'], step=1)
 
 if st.button("Gas Bet!"):
@@ -45,8 +45,18 @@ if st.button("Gas Bet!"):
     else:
         st.error("Masukin nama lu dulu bre!")
 
+# Admin Panel to Set the Result
+st.subheader("🛠️ Admin Panel 🛠️")
+admin_code = st.text_input("Masukin kode admin (biar ga sembarang orang edit)", type="password")
+if admin_code == "admin123":  # Change this to your preferred admin code
+    result_choice = st.radio("Set hasil Cuno:", ["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 1 naruh tas"])
+    if st.button("Konfirmasi Hasil"):
+        st.session_state['is_available'] = result_choice
+        st.session_state['admin_confirmed'] = True
+        st.success("Hasil berhasil diset! Sekarang semua bisa lihat hasilnya!")
+
 # Show results after 11:00 AM
-if current_time >= decision_time:
+if current_time >= decision_time and st.session_state['admin_confirmed']:
     st.subheader("🔔 Hasil Udah Keluar Bre! 🔔")
     if st.session_state['is_available'] is not None:
         actual = st.session_state['is_available']
@@ -69,3 +79,6 @@ if current_time >= decision_time:
 
 st.subheader("🏆 Leaderboard 🏆")
 st.dataframe(st.session_state['leaderboard'].sort_values(by='Points', ascending=False))
+
+# Add image at the bottom
+st.image("https://d1tgyzt3mf06m9.cloudfront.net/v3-staging/2019/03/858e0fcf66cb938706481b861d586083ff37e50a.jpg")
