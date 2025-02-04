@@ -1,111 +1,71 @@
 import streamlit as st
-
-from streamlit_metrics import metric, metric_row
-from streamlit_ace import st_ace
-
+import random
+import datetime
 import pandas as pd
-import numpy as np
-import altair as alt
-import cufflinks as cf
+import os
 
+# Set up session state
+if 'points' not in st.session_state:
+    st.session_state['points'] = 100
+if 'leaderboard' not in st.session_state:
+    st.session_state['leaderboard'] = pd.DataFrame(columns=['Player', 'Points'])
+if 'is_available' not in st.session_state:
+    st.session_state['is_available'] = None
+if 'bets' not in st.session_state:
+    st.session_state['bets'] = []
 
-st.set_page_config(
-    page_title="Streamlit Sandbox",
-    page_icon=":memo:",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
-st.sidebar.title(":memo: Editor settings")
+# Admin decides availability at 11:00 AM
+current_time = datetime.datetime.now().time()
+decision_time = datetime.time(11, 0)
+if current_time >= decision_time and st.session_state['is_available'] is None:
+    st.session_state['is_available'] = random.choice(["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 1 naruh tas"])
 
-st.title("Streamlit sandbox")
-st.write("Play with Streamlit live in the browser!")
+# Tailwind styles
+st.markdown("""
+    <style>
+        body {background-color: #fef9c3; font-family: 'Comic Sans MS', cursive;}
+        .stButton>button {border-radius: 12px; background-color: #f87171; color: white; font-size: 20px; padding: 10px;}
+        .stDataFrame {border: 3px dashed #facc15;}
+    </style>
+""", unsafe_allow_html=True)
 
-THEMES = [
-    "ambiance",
-    "chaos",
-    "chrome",
-    "clouds",
-    "clouds_midnight",
-    "cobalt",
-    "crimson_editor",
-    "dawn",
-    "dracula",
-    "dreamweaver",
-    "eclipse",
-    "github",
-    "gob",
-    "gruvbox",
-    "idle_fingers",
-    "iplastic",
-    "katzenmilch",
-    "kr_theme",
-    "kuroir",
-    "merbivore",
-    "merbivore_soft",
-    "mono_industrial",
-    "monokai",
-    "nord_dark",
-    "pastel_on_dark",
-    "solarized_dark",
-    "solarized_light",
-    "sqlserver",
-    "terminal",
-    "textmate",
-    "tomorrow",
-    "tomorrow_night",
-    "tomorrow_night_blue",
-    "tomorrow_night_bright",
-    "tomorrow_night_eighties",
-    "twilight",
-    "vibrant_ink",
-    "xcode",
-]
+st.title("🎲 Cuno Masuk Hari Ini? Bet Now! 🎲")
 
-KEYBINDINGS = ["emacs", "sublime", "vim", "vscode"]
+st.write("Place your bet before 11:00 AM! Do you think Cuno masuk hari ini? Earn points and climb the leaderboard!")
 
-editor, app = st.tabs(["Editor", "App"])
+player_name = st.text_input("Masukin nama lu dulu nih:")
 
-INITIAL_CODE = """
-table_data = {'Column 1': [1, 2], 'Column 2': [3, 4]}
-st.write(pd.DataFrame(data=table_data))
-"""
+bet = st.radio("Bet lu:", ["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 1 naruh tas"])
+wager = st.number_input("Mau bet berapa poin?", min_value=1, max_value=st.session_state['points'], step=1)
 
-with editor:
-    code = st_ace(
-        value=INITIAL_CODE,
-        language="python",
-        placeholder="st.header('Hello world!')",
-        theme=st.sidebar.selectbox("Theme", options=THEMES, index=26),
-        keybinding=st.sidebar.selectbox(
-            "Keybinding mode", options=KEYBINDINGS, index=3
-        ),
-        font_size=st.sidebar.slider("Font size", 5, 24, 14),
-        tab_size=st.sidebar.slider("Tab size", 1, 8, 4),
-        wrap=st.sidebar.checkbox("Wrap lines", value=False),
-        show_gutter=True,
-        show_print_margin=True,
-        auto_update=False,
-        readonly=False,
-        key="ace-editor",
-    )
-    st.write("Hit `CTRL+ENTER` to refresh")
-    st.write("*Remember to save your code separately!*")
+if st.button("Gas Bet!"):
+    if player_name:
+        st.session_state['bets'].append({'Player': player_name, 'Bet': bet, 'Wager': wager})
+        st.success(f"{player_name}, bet lu udah masuk bro!")
+    else:
+        st.error("Masukin nama lu dulu bre!")
 
-with app:
-    exec(code)
+# Show results after 11:00 AM
+if current_time >= decision_time:
+    st.subheader("🔔 Hasil Udah Keluar Bre! 🔔")
+    if st.session_state['is_available'] is not None:
+        actual = st.session_state['is_available']
+        st.write(f"Cuno hari ini: **{actual}**")
+        
+        # Update points
+        updated_leaderboard = []
+        for bet in st.session_state['bets']:
+            result = "Win" if bet['Bet'] == actual else "Lose"
+            change = bet['Wager'] if result == "Win" else -bet['Wager']
+            player_entry = next((entry for entry in updated_leaderboard if entry['Player'] == bet['Player']), None)
+            if player_entry:
+                player_entry['Points'] += change
+            else:
+                updated_leaderboard.append({'Player': bet['Player'], 'Points': st.session_state['points'] + change})
+            st.write(f"{bet['Player']} {result}! ({actual}).")
+        
+        # Save leaderboard
+        st.session_state['leaderboard'] = pd.DataFrame(updated_leaderboard)
 
-with st.sidebar:
-    libraries_available = st.expander("Available Libraries")
-    with libraries_available:
-        st.write(
-            """
-        * Pandas (pd)
-        * Numpy (np)
-        * Altair (alt)
-        * Bokeh
-        * Plotly
-        * Cufflinks (cf)
-
-        [Need something else?](https://github.com/samdobson/streamlit-sandbox/issues/new)
-        """
-        )
+st.subheader("🏆 Leaderboard 🏆")
+st.dataframe(st.session_state['leaderboard'].sort_values(by='Points', ascending=False))
