@@ -13,10 +13,10 @@ if 'is_available' not in st.session_state:
     st.session_state['is_available'] = None
 if 'bets' not in st.session_state:
     st.session_state['bets'] = []
-if 'admin_confirmed' not in st.session_state:
-    st.session_state['admin_confirmed'] = False
+if 'bandar_confirmed' not in st.session_state:
+    st.session_state['bandar_confirmed'] = False
 
-# Admin decides availability at 11:00 AM
+# Bandar decides availability at 11:00 AM
 current_time = datetime.datetime.now().time()
 decision_time = datetime.time(11, 0)
 
@@ -30,8 +30,8 @@ st.markdown("""
         /* Left and right animation */
         .left-animation, .right-animation {
             position: fixed;
-            top: 20%;
-            width: 200px;
+            top: 10%;
+            width: 400px;  /* Increased width */
             z-index: 999;
         }
         
@@ -45,13 +45,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Add the images for the animations
+# Add the images for the animations with larger size
 st.markdown("""
     <div class="left-animation">
-        <img src="https://media.istockphoto.com/id/1221449346/id/foto/gadis-berpakaian-merah-menampilkan-chip-berpose-dengan-latar-belakang-gelap-roulette-bermain.jpg?s=2048x2048&w=is&k=20&c=K21JFnyFBiGV0cJCaHtm8F6YXe0w853lCrVP09xsJSw=" width="200" />
+        <img src="https://media.istockphoto.com/id/1221449346/id/foto/gadis-berpakaian-merah-menampilkan-chip-berpose-dengan-latar-belakang-gelap-roulette-bermain.jpg?s=2048x2048&w=is&k=20&c=K21JFnyFBiGV0cJCaHtm8F6YXe0w853lCrVP09xsJSw=" width="400" />  <!-- Larger width -->
     </div>
     <div class="right-animation">
-        <img src="https://media.istockphoto.com/id/1190168811/id/foto/gadis-bermain-poker-di-kasino-memegang-segelas-sampanye-dua-ace-berpose-di-meja-dengan-keripik.jpg?s=2048x2048&w=is&k=20&c=iq0oYaBUiyQU4_wgBiPtxRMaTHeKdDDL13MlEElVv5g=" width="200" />
+        <img src="https://media.istockphoto.com/id/1190168811/id/foto/gadis-bermain-poker-di-kasino-memegang-segelas-sampanye-dua-ace-berpose-di-meja-dengan-keripik.jpg?s=2048x2048&w=is&k=20&c=iq0oYaBUiyQU4_wgBiPtxRMaTHeKdDDL13MlEElVv5g=" width="400" />  <!-- Larger width -->
     </div>
 """, unsafe_allow_html=True)
 
@@ -71,18 +71,18 @@ if st.button("Gas Bet!"):
     else:
         st.error("Masukin nama lu dulu bre!")
 
-# Admin Panel to Set the Result
-st.subheader("🛠️ Admin Panel 🛠️")
-admin_code = st.text_input("Masukin kode admin (biar ga sembarang orang edit)", type="password")
-if admin_code == "admin123":  # Change this to your preferred admin code
+# Bandar Panel to Set the Result
+st.subheader("🛠️ Bandar Panel 🛠️")
+bandar_code = st.text_input("Masukin kode bandar (biar ga sembarang orang edit)", type="password")
+if bandar_code == "bandar123":  # Change this to your preferred bandar code
     result_choice = st.radio("Set hasil Cuno:", ["Eh tumbenn masuuk", "Gaa masuk bre", "Masuk jam 10", "Jam 1 naruh tas"])
     if st.button("Konfirmasi Hasil"):
         st.session_state['is_available'] = result_choice
-        st.session_state['admin_confirmed'] = True
+        st.session_state['bandar_confirmed'] = True
         st.success("Hasil berhasil diset! Sekarang semua bisa lihat hasilnya!")
 
 # Show results after 11:00 AM
-if current_time >= decision_time and st.session_state['admin_confirmed']:
+if current_time >= decision_time and st.session_state['bandar_confirmed']:
     st.subheader("🔔 Hasil Udah Keluar Bre! 🔔")
     if st.session_state['is_available'] is not None:
         actual = st.session_state['is_available']
