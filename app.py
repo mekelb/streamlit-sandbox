@@ -88,20 +88,17 @@ if current_time >= decision_time and st.session_state['bandar_confirmed']:
         actual = st.session_state['is_available']
         st.write(f"Cuno hari ini: **{actual}**")
         
-        # Update points
-        updated_leaderboard = []
+        # Update points based on bets
+        updated_leaderboard = {}
         for bet in st.session_state['bets']:
             result = "Win" if bet['Bet'] == actual else "Lose"
             change = bet['Wager'] if result == "Win" else -bet['Wager']
-            player_entry = next((entry for entry in updated_leaderboard if entry['Player'] == bet['Player']), None)
-            if player_entry:
-                player_entry['Points'] += change
-            else:
-                updated_leaderboard.append({'Player': bet['Player'], 'Points': st.session_state['points'] + change})
+            player_entry = updated_leaderboard.get(bet['Player'], st.session_state['points'])  # Default points if player not in leaderboard
+            updated_leaderboard[bet['Player']] = player_entry + change
             st.write(f"{bet['Player']} {result}! ({actual}).")
         
-        # Save leaderboard
-        st.session_state['leaderboard'] = pd.DataFrame(updated_leaderboard)
+        # Convert the leaderboard to a DataFrame and update the session state
+        st.session_state['leaderboard'] = pd.DataFrame(updated_leaderboard.items(), columns=['Player', 'Points'])
 
 st.subheader("🏆 Leaderboard 🏆")
 st.dataframe(st.session_state['leaderboard'].sort_values(by='Points', ascending=False))
